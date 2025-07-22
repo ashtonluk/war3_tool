@@ -44,7 +44,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chuyển đổi BlzFrameSetAbsPoint sang frame.movex</title>
+    <title>Chuyển đổi BlzFrameSetAbsPoint sang frame.movex v2</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -164,13 +164,14 @@
 
                     const W = (xTopRight - xBottomLeft).toFixed(6);
                     const H = (yTopRight - yBottomLeft).toFixed(6);
-                    const x_val = xBottomLeft.toFixed(6);
-                    const y_val = yBottomLeft.toFixed(6);
+                    const xVal = xBottomLeft.toFixed(6);
+                    const yVal = yBottomLeft.toFixed(6);
 
                     const frameOut = currentPrefixDot ? `.${frameName}` : frameName;
 
-                    result += `call frame.movex(${frameOut}, ${W}, ${H}, ${x_val}, ${y_val})\n`;
+                    result += `call frame.movex(${frameOut}, ${W}, ${H}, ${xVal}, ${yVal})\n`;
 
+                    // Reset
                     topLeft = null;
                     bottomRight = null;
                     currentFrame = null;
@@ -191,7 +192,7 @@
             if (output) {
                 navigator.clipboard.writeText(output)
                     .then(() => alert('Đã sao chép kết quả!'))
-                    .catch(() => alert('Lỗi khi sao chép!'));
+                    .catch(() => alert('Không thể sao chép, hãy thử lại.'));
             } else {
                 alert('Không có kết quả để sao chép!');
             }
