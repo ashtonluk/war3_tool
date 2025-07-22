@@ -192,8 +192,8 @@
             const output = document.getElementById('output').textContent;
             if (output) {
                 navigator.clipboard.writeText(output)
-                    .then(() => alert('Đã sao chép kết quả!'))
-                    .catch(() => alert('Không thể sao chép, hãy thử lại.'));
+                    .then()
+                    .catch();
             } else {
                 alert('Không có kết quả để sao chép!');
             }
