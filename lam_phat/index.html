@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Tính Lạm Phát VNĐ dựa vào XAUUSD</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    select,
+    input,
+    button {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    input[type="text"] {
+      width: 120px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #output {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    .result {
+      font-weight: 600;
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Tính Lạm Phát VNĐ dựa vào XAUUSD</h2>
+
+  <div>
+    <label>Tháng:</label>
+    <select id="month1">
+      <script>
+        for (let i = 1; i <= 12; i++) {
+          document.write(`<option value="${i.toString().padStart(2, '0')}">${i}</option>`);
+        }
+      </script>
+    </select>
+
+    <label>Năm:</label>
+    <select id="year1">
+      <script>
+        for (let i = 1970; i <= 2025; i++) {
+          document.write(`<option value="${i}">${i}</option>`);
+        }
+      </script>
+    </select>
+  </div>
+
+  <div>
+    <label>Số tiền (VND):</label>
+    <input type="text" id="amount" value="1.000.000" oninput="formatNumber(this)" />
+  </div>
+
+  <div>
+    <label>So sánh với:</label>
+    <select id="month2">
+      <script>
+        for (let i = 1; i <= 12; i++) {
+          document.write(`<option value="${i.toString().padStart(2, '0')}">${i}</option>`);
+        }
+      </script>
+    </select>
+    <select id="year2">
+      <script>
+        for (let i = 1970; i <= 2025; i++) {
+          document.write(`<option value="${i}">${i}</option>`);
+        }
+      </script>
+    </select>
+    <button onclick="setCurrentDate()">Hiện Tại 07/2025</button>
+  </div>
+
+  <button onclick="searchData()">Tính Toán</button>
+
+  <div id="output">Đang tải dữ liệu...</div>
+
+  <script>
+    function formatNumber(input) {
+      // Lấy giá trị, loại bỏ dấu chấm để xử lý
+      let value = input.value.replace(/\./g, '');
+      // Chỉ giữ lại các chữ số
+      value = value.replace(/[^0-9]/g, '');
+      // Định dạng lại với dấu chấm phân cách
+      if (value) {
+        input.value = Number(value).toLocaleString('vi-VN', { minimumFractionDigits: 0 });
+      } else {
+        input.value = '';
+      }
+    }
+
+    let xauData = [];
+    let usdData = [];
+    let loaded = 0;
+
+    function checkReady() {
+      if (loaded === 2) {
+        document.getElementById('output').innerText = "Dữ liệu đã tải thành công";
+      }
+    }
+
+    // Load xausd.xlsx
+    fetch('xausd.xlsx')
+      .then(res => res.arrayBuffer())
+      .then(buffer => {
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        xauData = XLSX.utils.sheet_to_json(sheet);
+        loaded++;
+        checkReady();
+      })
+      .catch(err => {
+        document.getElementById('output').innerText = "Không thể tải tệp xausd.xlsx";
+        console.error(err);
+      });
+
+    // Load usdvnd.xlsx
+    fetch('usdvnd.xlsx')
+      .then(res => res.arrayBuffer())
+      .then(buffer => {
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        usdData = XLSX.utils.sheet_to_json(sheet);
+        loaded++;
+        checkReady();
+      })
+      .catch(err => {
+        document.getElementById('output').innerText = "Không thể tải tệp usdvnd.xlsx";
+        console.error(err);
+      });
+
+    function setCurrentDate() {
+      document.getElementById('month2').value = '07';
+      document.getElementById('year2').value = '2025';
+    }
+
+    // Tự động đặt tháng 07 và năm 2025 khi trang được tải
+    window.onload = function() {
+      setCurrentDate();
+    };
+
+    function searchData() {
+      const month1 = document.getElementById('month1').value;
+      const year1 = document.getElementById('year1').value;
+      // Loại bỏ dấu chấm từ giá trị amount trước khi parse
+      const amount = parseFloat(document.getElementById('amount').value.replace(/\./g, '')) || 0;
+      const target1 = `01/${month1}/${year1}`;
+
+      const month2 = document.getElementById('month2').value;
+      const year2 = document.getElementById('year2').value;
+      const target2 = `01/${month2}/${year2}`;
+
+      // Tìm trong xausd cho ngày gốc
+      const xauRow1 = xauData.find(r => {
+        const dayStr = r.day?.toString().split(" ")[0];
+        return dayStr === target1;
+      });
+      const xauOpen1 = (xauRow1 && xauRow1.open !== undefined) ? xauRow1.open : null;
+
+      // Tìm trong usdvnd cho ngày gốc
+      const usdRow1 = usdData.find(r => {
+        const dayStr = r.day?.toString().split(" ")[0];
+        return dayStr === target1;
+      });
+      const usdOpen1 = (usdRow1 && usdRow1.open !== undefined) ? usdRow1.open : 11000;
+
+      // Tìm trong xausd cho ngày so sánh
+      const xauRow2 = xauData.find(r => {
+        const dayStr = r.day?.toString().split(" ")[0];
+        return dayStr === target2;
+      });
+      const xauOpen2 = (xauRow2 && xauRow2.open !== undefined) ? xauRow2.open : null;
+
+      // Tìm trong usdvnd cho ngày so sánh
+      const usdRow2 = usdData.find(r => {
+        const dayStr = r.day?.toString().split(" ")[0];
+        return dayStr === target2;
+      });
+      const usdOpen2 = (usdRow2 && usdRow2.open !== undefined) ? usdRow2.open : 11000;
+
+      let no_use = `
+        <div>Ngày: ${target1}</div>
+        <div>XAUUSD (mở cửa): ${xauOpen1 || "Không có dữ liệu"}</div>
+        <div>USD/VND (mở cửa): ${usdOpen1 || "Không có dữ liệu"}</div>
+        <div>Ngày so sánh: ${target2}</div>
+        <div>XAUUSD (mở cửa): ${xauOpen2 || "Không có dữ liệu"}</div>
+        <div>USD/VND (mở cửa): ${usdOpen2 || "Không có dữ liệu"}</div>
+      `;
+
+      let output = `
+      `;
+      // Tính giá trị tương đương
+      if (xauOpen1 && usdOpen1 && xauOpen2 && usdOpen2) {
+        const gold_at_year1 = xauOpen1 * usdOpen1;
+        const gold_at_year2 = xauOpen2 * usdOpen2;
+        const amount2 = Math.round((amount / gold_at_year1) * gold_at_year2);
+
+        output += `
+          <div class="result">${amount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year1} tương đương với ${amount2.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year2} (dựa trên giá vàng)</div>
+        `;
+      } else {
+        output += `<div class="result">Không đủ dữ liệu để tính giá trị tương đương</div>`;
+      }
+
+      document.getElementById('output').innerHTML = output;
+    }
+  </script>
+</body>
+
+</html>
