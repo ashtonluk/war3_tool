@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Tính Lạm Phát VNĐ dựa vào XAUUSD</title>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
   <style>
@@ -18,6 +18,7 @@
     h2 {
       font-size: 1.5em;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     select,
@@ -60,13 +61,90 @@
       font-weight: 600;
       color: #007bff;
     }
+
+    /* Responsive adjustments for iPhone (screen width <= 414px) */
+    @media (max-width: 414px) {
+      body {
+        padding: 4vw;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        min-height: 100vh;
+      }
+
+      h2 {
+        font-size: 1.2rem;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+      }
+
+      label {
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      select,
+      input,
+      button {
+        padding: 0.7rem;
+        margin: 0.3rem 0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      input[type="text"] {
+        max-width: 100%;
+      }
+
+      #output {
+        margin-top: 1rem;
+        padding: 1rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Dark mode support for iPhone */
+    @media (max-width: 414px) and (prefers-color-scheme: dark) {
+      body {
+        background: #1c2526;
+        color: #e0e0e0;
+      }
+
+      #output {
+        background: #2c3e50;
+        color: #e0e0e0;
+      }
+
+      select,
+      input {
+        background: #34495e;
+        color: #e0e0e0;
+        border-color: #4a6076;
+      }
+
+      button {
+        background: #1e90ff;
+      }
+
+      button:hover {
+        background: #1565c0;
+      }
+    }
   </style>
 </head>
 
 <body>
   <h2>Tính Lạm Phát VNĐ dựa vào XAUUSD</h2>
 
-  <div>
+  <div class="input-group">
     <label>Tháng:</label>
     <select id="month1">
       <script>
@@ -86,12 +164,12 @@
     </select>
   </div>
 
-  <div>
+  <div class="input-group">
     <label>Số tiền (VND):</label>
     <input type="text" id="amount" value="1.000.000" oninput="formatNumber(this)" />
   </div>
 
-  <div>
+  <div class="input-group">
     <label>So sánh với:</label>
     <select id="month2">
       <script>
@@ -116,11 +194,8 @@
 
   <script>
     function formatNumber(input) {
-      // Lấy giá trị, loại bỏ dấu chấm để xử lý
       let value = input.value.replace(/\./g, '');
-      // Chỉ giữ lại các chữ số
       value = value.replace(/[^0-9]/g, '');
-      // Định dạng lại với dấu chấm phân cách
       if (value) {
         input.value = Number(value).toLocaleString('vi-VN', { minimumFractionDigits: 0 });
       } else {
@@ -138,7 +213,6 @@
       }
     }
 
-    // Load xausd.xlsx
     fetch('xausd.xlsx')
       .then(res => res.arrayBuffer())
       .then(buffer => {
@@ -153,7 +227,6 @@
         console.error(err);
       });
 
-    // Load usdvnd.xlsx
     fetch('usdvnd.xlsx')
       .then(res => res.arrayBuffer())
       .then(buffer => {
@@ -173,7 +246,6 @@
       document.getElementById('year2').value = '2025';
     }
 
-    // Tự động đặt tháng 07 và năm 2025 khi trang được tải
     window.onload = function() {
       setCurrentDate();
     };
@@ -181,7 +253,6 @@
     function searchData() {
       const month1 = document.getElementById('month1').value;
       const year1 = document.getElementById('year1').value;
-      // Loại bỏ dấu chấm từ giá trị amount trước khi parse
       const amount = parseFloat(document.getElementById('amount').value.replace(/\./g, '')) || 0;
       const target1 = `01/${month1}/${year1}`;
 
@@ -189,53 +260,38 @@
       const year2 = document.getElementById('year2').value;
       const target2 = `01/${month2}/${year2}`;
 
-      // Tìm trong xausd cho ngày gốc
       const xauRow1 = xauData.find(r => {
         const dayStr = r.day?.toString().split(" ")[0];
         return dayStr === target1;
       });
       const xauOpen1 = (xauRow1 && xauRow1.open !== undefined) ? xauRow1.open : null;
 
-      // Tìm trong usdvnd cho ngày gốc
       const usdRow1 = usdData.find(r => {
         const dayStr = r.day?.toString().split(" ")[0];
         return dayStr === target1;
       });
       const usdOpen1 = (usdRow1 && usdRow1.open !== undefined) ? usdRow1.open : 11000;
 
-      // Tìm trong xausd cho ngày so sánh
       const xauRow2 = xauData.find(r => {
         const dayStr = r.day?.toString().split(" ")[0];
         return dayStr === target2;
       });
       const xauOpen2 = (xauRow2 && xauRow2.open !== undefined) ? xauRow2.open : null;
 
-      // Tìm trong usdvnd cho ngày so sánh
       const usdRow2 = usdData.find(r => {
         const dayStr = r.day?.toString().split(" ")[0];
         return dayStr === target2;
       });
       const usdOpen2 = (usdRow2 && usdRow2.open !== undefined) ? usdRow2.open : 11000;
 
-      let no_use = `
-        <div>Ngày: ${target1}</div>
-        <div>XAUUSD (mở cửa): ${xauOpen1 || "Không có dữ liệu"}</div>
-        <div>USD/VND (mở cửa): ${usdOpen1 || "Không có dữ liệu"}</div>
-        <div>Ngày so sánh: ${target2}</div>
-        <div>XAUUSD (mở cửa): ${xauOpen2 || "Không có dữ liệu"}</div>
-        <div>USD/VND (mở cửa): ${usdOpen2 || "Không có dữ liệu"}</div>
-      `;
-
-      let output = `
-      `;
-      // Tính giá trị tương đương
+      let output = '';
       if (xauOpen1 && usdOpen1 && xauOpen2 && usdOpen2) {
         const gold_at_year1 = xauOpen1 * usdOpen1;
         const gold_at_year2 = xauOpen2 * usdOpen2;
         const amount2 = Math.round((amount / gold_at_year1) * gold_at_year2);
 
         output += `
-          <div class="result">${amount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year1} tương đương với ${amount2.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year2} (dựa trên giá vàng)</div>
+          <div class="result">${amount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year1} tương đương với ${amount2.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year2}</div>
         `;
       } else {
         output += `<div class="result">Không đủ dữ liệu để tính giá trị tương đương</div>`;
@@ -245,5 +301,4 @@
     }
   </script>
 </body>
-
 </html>
