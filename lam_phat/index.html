@@ -60,6 +60,86 @@
     .result {
       font-weight: 600;
       color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    /* Thống kê */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-box h3 {
+      font-size: 0.9em;
+      margin: 0 0 5px;
+      color: #555;
+    }
+
+    .stat-box p {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #007bff;
+      margin: 0;
+    }
+
+    /* FAQ Accordion */
+    .faq-container {
+      margin-top: 30px;
+    }
+
+    .faq-container h3 {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .faq-item {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 15px;
+      background: #f8f9fa;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-question::after {
+      content: '\25BC';
+      font-size: 0.8em;
+    }
+
+    .faq-question.active::after {
+      content: '\25B2';
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 15px;
+      background: white;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    .faq-answer.active {
+      display: block;
     }
 
     /* Responsive adjustments for iPhone (screen width <= 414px) */
@@ -109,6 +189,37 @@
         padding: 1rem;
         font-size: 0.85rem;
       }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .stat-box {
+        padding: 12px;
+      }
+
+      .stat-box h3 {
+        font-size: 0.85rem;
+      }
+
+      .stat-box p {
+        font-size: 1rem;
+      }
+
+      .faq-container h3 {
+        font-size: 1.1rem;
+      }
+
+      .faq-question {
+        font-size: 0.9rem;
+        padding: 12px;
+      }
+
+      .faq-answer {
+        font-size: 0.85rem;
+        padding: 12px;
+      }
     }
 
     /* Dark mode support for iPhone */
@@ -119,6 +230,25 @@
       }
 
       #output {
+        background: #2c3e50;
+        color: #e0e0e0;
+      }
+
+      .stats-container .stat-box {
+        background: #34495e;
+        color: #e0e0e0;
+      }
+
+      .faq-item {
+        border-color: #4a6076;
+      }
+
+      .faq-question {
+        background: #34495e;
+        color: #e0e0e0;
+      }
+
+      .faq-answer {
         background: #2c3e50;
         color: #e0e0e0;
       }
@@ -191,6 +321,38 @@
   <button onclick="searchData()">Tính Toán</button>
 
   <div id="output">Đang tải dữ liệu...</div>
+  <div id="stats" class="stats-container"></div>
+
+  <div class="faq-container">
+    <h3>Câu hỏi thường gặp</h3>
+    <div class="faq-item">
+      <div class="faq-question">Mục đích của trang web này là gì?</div>
+      <div class="faq-answer">
+        Trang web được thiết kế để giúp người dùng hiểu rõ hơn về giá trị thực tế của đồng Việt Nam (VND) qua các năm, dựa trên sức mua so với vàng (XAU), một tài sản lưu giữ giá trị ổn định và đáng tin cậy trong lịch sử. Thay vì chỉ dựa vào giá trị danh nghĩa, trang web cung cấp cái nhìn sâu sắc về mức độ thay đổi sức mua của VND theo thời gian.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Tại sao sử dụng vàng (XAUUSD) để tính lạm phát thay vì chỉ số CPI hoặc số liệu chính thức?</div>
+      <div class="faq-answer">
+        Chỉ số giá tiêu dùng (CPI) thường được sử dụng để đo lạm phát, nhưng chỉ số này có thể không phản ánh chính xác sức mua thực tế vì:<br>
+        - CPI phụ thuộc vào cách tính và chính sách của từng quốc gia, dễ bị điều chỉnh.<br>
+        - CPI chỉ dựa trên một rổ hàng hóa tiêu biểu, không bao quát hết nhu cầu thực tế của từng cá nhân.<br><br>
+        Ngược lại, vàng (theo đơn vị ounce quốc tế) là một chuẩn mực trung lập, không chịu sự chi phối của bất kỳ quốc gia nào và duy trì giá trị nội tại ổn định qua thời gian. Bằng cách so sánh tỷ giá VND với XAUUSD qua các năm, trang web cung cấp một thước đo lạm phát thực tế, độc lập và mang tính toàn cầu.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Trang web tính toán lạm phát như thế nào?</div>
+      <div class="faq-answer">
+        Trang web sử dụng hai bộ dữ liệu chính:<br>
+        - <strong>XAUUSD</strong>: Tỷ giá vàng quốc tế (giá 1 ounce vàng đổi được bao nhiêu USD).<br>
+        - <strong>USDVND</strong>: Tỷ giá giữa USD và VND.<br><br>
+        Từ đó, trang web tính toán:<br>
+        - Giá trị của 1 ounce vàng quy đổi ra VND tại hai thời điểm khác nhau.<br>
+        - Mức độ thay đổi sức mua của VND dựa trên số tiền tương đương khi quy đổi qua vàng.<br><br>
+        Kết quả cho thấy số tiền VND cần thiết để mua cùng một lượng vàng tại các thời điểm khác nhau, từ đó phản ánh mức độ mất giá thực tế của VND mà không phụ thuộc vào chỉ số CPI chính thức.
+      </div>
+    </div>
+  </div>
 
   <script>
     function formatNumber(input) {
@@ -248,16 +410,30 @@
 
     window.onload = function() {
       setCurrentDate();
+      // Accordion functionality
+      const faqQuestions = document.querySelectorAll('.faq-question');
+      faqQuestions.forEach(question => {
+        question.addEventListener('click', () => {
+          const answer = question.nextElementSibling;
+          const isActive = answer.classList.contains('active');
+          document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('active'));
+          document.querySelectorAll('.faq-question').forEach(q => q.classList.remove('active'));
+          if (!isActive) {
+            answer.classList.add('active');
+            question.classList.add('active');
+          }
+        });
+      });
     };
 
     function searchData() {
       const month1 = document.getElementById('month1').value;
-      const year1 = document.getElementById('year1').value;
+      const year1 = parseInt(document.getElementById('year1').value);
       const amount = parseFloat(document.getElementById('amount').value.replace(/\./g, '')) || 0;
       const target1 = `01/${month1}/${year1}`;
 
       const month2 = document.getElementById('month2').value;
-      const year2 = document.getElementById('year2').value;
+      const year2 = parseInt(document.getElementById('year2').value);
       const target2 = `01/${month2}/${year2}`;
 
       const xauRow1 = xauData.find(r => {
@@ -285,19 +461,47 @@
       const usdOpen2 = (usdRow2 && usdRow2.open !== undefined) ? usdRow2.open : 11000;
 
       let output = '';
+      let stats = '';
       if (xauOpen1 && usdOpen1 && xauOpen2 && usdOpen2) {
         const gold_at_year1 = xauOpen1 * usdOpen1;
         const gold_at_year2 = xauOpen2 * usdOpen2;
         const amount2 = Math.round((amount / gold_at_year1) * gold_at_year2);
 
+        const priceChange = amount2 - amount;
+        const percentageChange = ((amount2 - amount) / amount * 100).toFixed(2);
+        const yearsDiff = Math.abs(year2 - year1);
+        const avgInflationRate = yearsDiff > 0 ? 
+          ((Math.pow(amount2 / amount, 1 / yearsDiff) - 1) * 100).toFixed(2) : 0;
+
         output += `
-          <div class="result">${amount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year1} tương đương với ${amount2.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year2}</div>
+          <div class="result">${amount.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year1} tương đương với ${amount2.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND trong năm ${year2} (dựa trên giá vàng)</div>
+        `;
+
+        stats += `
+          <div class="stat-box">
+            <h3>Tổng giá thay đổi</h3>
+            <p>${priceChange.toLocaleString('vi-VN', { minimumFractionDigits: 0 })} VND</p>
+          </div>
+          <div class="stat-box">
+            <h3>Tỷ lệ phần trăm thay đổi</h3>
+            <p>${percentageChange}%</p>
+          </div>
+          <div class="stat-box">
+            <h3>Tỷ lệ lạm phát trung bình</h3>
+            <p>${avgInflationRate}%</p>
+          </div>
+          <div class="stat-box">
+            <h3>Khoảng thời gian</h3>
+            <p>${yearsDiff} năm</p>
+          </div>
         `;
       } else {
         output += `<div class="result">Không đủ dữ liệu để tính giá trị tương đương</div>`;
+        stats += `<div class="result">Không đủ dữ liệu để hiển thị thống kê</div>`;
       }
 
       document.getElementById('output').innerHTML = output;
+      document.getElementById('stats').innerHTML = stats;
     }
   </script>
 </body>
